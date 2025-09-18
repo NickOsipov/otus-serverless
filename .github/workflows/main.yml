@@ -66,6 +66,7 @@ jobs:
           runtime: 'python312'
           memory: '512Mb'
           entrypoint: 'main.handler'
+          execution-timeout: '60'
           environment: |
             S3_ACCESS_KEY=${{ env.S3_ACCESS_KEY }}
             S3_SECRET_KEY=${{ env.S3_SECRET_KEY }}
