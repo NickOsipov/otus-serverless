@@ -45,26 +45,58 @@ jobs:
         cd src
         python train.py
         
-  deploy:
-    name: Upload Source code to S3
+  # deploy:
+  #   name: Upload Source code to S3
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     # загрузка репозитория в runner
+  #     - uses: actions/checkout@v2
+      
+  #     # создание ZIP архива
+  #     - name: Create ZIP archive
+  #       run: |
+  #         zip -r src.zip src/*
+      
+  #     - name: Monitor ZIP archive
+  #       run: ls -la
+      
+  #     # загрузка файлов в S3
+  #     - name: Upload ZIP to S3
+  #       run: |
+  #         pip install awscli
+  #         aws s3 cp src.zip s3://${{ env.S3_BUCKET_NAME }}/src.zip --endpoint-url=${{ env.S3_ENDPOINT }}
+  #       env:
+  #         AWS_ACCESS_KEY_ID: ${{ env.S3_ACCESS_KEY }}
+  #         AWS_SECRET_ACCESS_KEY: ${{ env.S3_SECRET_KEY }}
+
+  deploy-function:
+    name: Deploy Serverless Function
     runs-on: ubuntu-latest
+    needs: [train]  # Запускается после обучения модели и загрузки кода
     steps:
-      # загрузка репозитория в runner
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
       
-      # создание ZIP архива
-      - name: Create ZIP archive
-        run: |
-          zip -r src.zip src/*
-      
-      - name: Monitor ZIP archive
-        run: ls -la
-      
-      # загрузка файлов в S3
-      - name: Upload ZIP to S3
-        run: |
-          pip install awscli
-          aws s3 cp src.zip s3://${{ env.S3_BUCKET_NAME }}/src.zip --endpoint-url=${{ env.S3_ENDPOINT }}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ env.S3_ACCESS_KEY }}
-          AWS_SECRET_ACCESS_KEY: ${{ env.S3_SECRET_KEY }}
+      - name: Deploy Function to Yandex Cloud
+        uses: yc-actions/yc-sls-function@v4
+        with:
+          yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
+          folder-id: ${{ secrets.YC_FOLDER_ID }}
+          function-name: 'iris-ml-predictor'
+          runtime: 'python312'
+          memory: '512Mb'
+          entrypoint: 'main.handler'
+          environment: |
+            S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}
+            S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
+            S3_BUCKET_NAME=ml-model-storage
+          include: |
+            ./src/main.py
+            ./requirements.txt
+          exclude: |
+            ./src/train.py
+            ./**/*.md
+            ./**/.git*
+          tags: |
+            version:${{ github.sha }}
+            env:production
