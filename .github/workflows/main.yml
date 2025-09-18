@@ -13,61 +13,40 @@ env:
   S3_ENDPOINT: https://storage.yandexcloud.net
   S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
   S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+  YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+  YC_SA_JSON_CREDENTIALS: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
+
 
 jobs:
-  # train:
-  #   runs-on: ubuntu-latest
-  #   name: Train Iris Model and Upload to S3
+  train:
+    runs-on: ubuntu-latest
+    name: Train Iris Model and Upload to S3
     
-  #   steps:
-  #   # загрузка репозитория в runner
-  #   - name: Checkout code
-  #     uses: actions/checkout@v4
+    steps:
+    # загрузка репозитория в runner
+    - name: Checkout code
+      uses: actions/checkout@v4
     
-  #   # настройка Python
-  #   - name: Set up Python
-  #     uses: actions/setup-python@v4
-  #     with:
-  #       python-version: ${{ env.PYTHON_VERSION }}
+    # настройка Python
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
           
-  #   - name: Install dependencies
-  #     run: |
-  #       python -m pip install --upgrade pip
-  #       pip install -r requirements.txt
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-  #   # запуск обучения модели
-  #   - name: Run model training
-  #     env:
-  #       AWS_ACCESS_KEY_ID: ${{ env.S3_ACCESS_KEY }}
-  #       AWS_SECRET_ACCESS_KEY: ${{ env.S3_SECRET_KEY }}
-  #       S3_BUCKET_NAME: ml-model-storage
-  #     run: |
-  #       cd src
-  #       python train.py
-        
-  # deploy:
-  #   name: Upload Source code to S3
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     # загрузка репозитория в runner
-  #     - uses: actions/checkout@v2
-      
-  #     # создание ZIP архива
-  #     - name: Create ZIP archive
-  #       run: |
-  #         zip -r src.zip src/*
-      
-  #     - name: Monitor ZIP archive
-  #       run: ls -la
-      
-  #     # загрузка файлов в S3
-  #     - name: Upload ZIP to S3
-  #       run: |
-  #         pip install awscli
-  #         aws s3 cp src.zip s3://${{ env.S3_BUCKET_NAME }}/src.zip --endpoint-url=${{ env.S3_ENDPOINT }}
-  #       env:
-  #         AWS_ACCESS_KEY_ID: ${{ env.S3_ACCESS_KEY }}
-  #         AWS_SECRET_ACCESS_KEY: ${{ env.S3_SECRET_KEY }}
+    # запуск обучения модели
+    - name: Run model training
+      env:
+        AWS_ACCESS_KEY_ID: ${{ env.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ env.S3_SECRET_KEY }}
+        S3_BUCKET_NAME: ml-model-storage
+      run: |
+        cd src
+        python train.py
 
   deploy-function:
     name: Deploy Serverless Function
@@ -80,16 +59,16 @@ jobs:
       - name: Deploy Function to Yandex Cloud
         uses: yc-actions/yc-sls-function@v4
         with:
-          yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
-          folder-id: ${{ secrets.YC_FOLDER_ID }}
+          yc-sa-json-credentials: ${{ env.YC_SA_JSON_CREDENTIALS }}
+          folder-id: ${{ env.YC_FOLDER_ID }}
           service-account-name: 'github-actions-sa'
           function-name: 'iris-ml-predictor'
           runtime: 'python312'
           memory: '512Mb'
           entrypoint: 'main.handler'
           environment: |
-            S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}
-            S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
+            S3_ACCESS_KEY=${{ env.S3_ACCESS_KEY }}
+            S3_SECRET_KEY=${{ env.S3_SECRET_KEY }}
             S3_BUCKET_NAME=ml-model-storage
           include: |
             ./main.py
