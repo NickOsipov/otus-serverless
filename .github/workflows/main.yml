@@ -82,10 +82,11 @@ jobs:
         with:
           yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
           folder-id: ${{ secrets.YC_FOLDER_ID }}
+          service-account: 'github-actions-sa'
           function-name: 'iris-ml-predictor'
           runtime: 'python312'
           memory: '512Mb'
-          entrypoint: 'main.handler'
+          entrypoint: 'src/main.handler'
           environment: |
             S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}
             S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
