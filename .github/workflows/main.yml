@@ -97,6 +97,4 @@ jobs:
             ./src/train.py
             ./**/*.md
             ./**/.git*
-          tags: |
-            version:${{ github.sha }}
-            env:production
+

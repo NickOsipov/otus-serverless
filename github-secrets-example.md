@@ -18,7 +18,19 @@ YC_SA_JSON_CREDENTIALS={
 
 # Команды для получения реальных значений:
 ```bash
+# Создание сервисного аккаунта и ключа
 yc resource-manager folder list  # для YC_FOLDER_ID
 yc iam service-account create --name github-actions-sa
 yc iam key create --service-account-name github-actions-sa --output key.json
+
+# Назначение ролей для деплоя функций
+FOLDER_ID="your_folder_id"
+SA_ID=$(yc iam service-account get github-actions-sa --format json | jq -r '.id')
+
+# Основные роли для деплоя
+yc resource-manager folder add-access-binding $FOLDER_ID --role functions.admin --subject serviceAccount:$SA_ID
+yc resource-manager folder add-access-binding $FOLDER_ID --role iam.serviceAccounts.user --subject serviceAccount:$SA_ID
+
+# Дополнительные роли для работы с S3
+yc resource-manager folder add-access-binding $FOLDER_ID --role storage.admin --subject serviceAccount:$SA_ID
 ```
