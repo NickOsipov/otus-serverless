@@ -82,7 +82,7 @@ jobs:
         with:
           yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
           folder-id: ${{ secrets.YC_FOLDER_ID }}
-          service-account: 'ajen7g1ut6s37a2s4h7i'
+          service-account-name: 'github-actions-sa'
           function-name: 'iris-ml-predictor'
           runtime: 'python312'
           memory: '512Mb'
