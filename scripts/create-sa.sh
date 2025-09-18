@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Создание сервисного аккаунта и ключа для GitHub Actions
-SERVICE_ACCOUNT_NAME="github-actions-sa"
+SERVICE_ACCOUNT_NAME=$1
 
 yc iam service-account create --name $SERVICE_ACCOUNT_NAME
 yc iam key create --service-account-name $SERVICE_ACCOUNT_NAME --output key.json

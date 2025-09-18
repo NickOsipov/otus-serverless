@@ -41,8 +41,8 @@ jobs:
     # запуск обучения модели
     - name: Run model training
       env:
-        AWS_ACCESS_KEY_ID: ${{ env.S3_ACCESS_KEY }}
-        AWS_SECRET_ACCESS_KEY: ${{ env.S3_SECRET_KEY }}
+        S3_ACCESS_KEY: ${{ env.S3_ACCESS_KEY }}
+        S3_SECRET_KEY: ${{ env.S3_SECRET_KEY }}
         S3_BUCKET_NAME: ${{ env.S3_BUCKET_NAME }}
       run: |
         cd src
@@ -62,7 +62,7 @@ jobs:
           yc-sa-json-credentials: ${{ env.YC_SA_JSON_CREDENTIALS }}
           folder-id: ${{ env.YC_FOLDER_ID }}
           service-account-name: 'github-actions-sa'
-          function-name: 'iris-ml-predictor'
+          function-name: 'ml-predict-api'
           runtime: 'python312'
           memory: '512Mb'
           entrypoint: 'main.handler'

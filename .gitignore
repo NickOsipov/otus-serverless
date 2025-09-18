@@ -83,3 +83,4 @@ coverage.xml
 .hypothesis/
 buf
 key.json
+.env.backup

@@ -18,7 +18,7 @@ otus-serverless/
 │   └── train.py            # Скрипт обучения модели
 ├── .github/
 │   └── workflows/
-│       └── ьфшт.yml # CI/CD пайплайн
+│       └── main.yml        # CI/CD пайплайн
 ├── main.py                 # Serverless функция для предсказаний
 ├── requirements.txt        # Зависимости Python
 └── README.md               # Документация
