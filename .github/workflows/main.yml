@@ -72,7 +72,7 @@ jobs:
   deploy-function:
     name: Deploy Serverless Function
     runs-on: ubuntu-latest
-    needs: [train]  # Запускается после обучения модели и загрузки кода
+    # needs: [train]  # Запускается после обучения модели и загрузки кода
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
