@@ -57,6 +57,9 @@ jobs:
         run: |
           zip -r src.zip src/*
       
+      - name: Monitor ZIP archive
+        run: ls -la
+      
       # загрузка файлов в S3
       - name: Upload to S3
         uses: jakejarvis/s3-sync-action@master
