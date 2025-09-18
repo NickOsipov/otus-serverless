@@ -2,9 +2,9 @@ name: ML Pipeline - Train Model and Deploy
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
   workflow_dispatch:  # Позволяет запускать workflow вручную
 
 env:
@@ -43,7 +43,7 @@ jobs:
       env:
         AWS_ACCESS_KEY_ID: ${{ env.S3_ACCESS_KEY }}
         AWS_SECRET_ACCESS_KEY: ${{ env.S3_SECRET_KEY }}
-        S3_BUCKET_NAME: ml-model-storage
+        S3_BUCKET_NAME: ${{ env.S3_BUCKET_NAME }}
       run: |
         cd src
         python train.py
@@ -69,7 +69,7 @@ jobs:
           environment: |
             S3_ACCESS_KEY=${{ env.S3_ACCESS_KEY }}
             S3_SECRET_KEY=${{ env.S3_SECRET_KEY }}
-            S3_BUCKET_NAME=ml-model-storage
+            S3_BUCKET_NAME=${{ env.S3_BUCKET_NAME }}
           include: |
             ./main.py
             ./requirements.txt

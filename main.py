@@ -23,18 +23,18 @@ def load_model_from_s3():
     
     print("Загрузка модели из S3...")
     # Проверяем наличие необходимых переменных окружения
-    aws_access_key_id = os.getenv('S3_ACCESS_KEY')
-    aws_secret_access_key = os.getenv('S3_SECRET_KEY')
+    s3_access_key = os.getenv('S3_ACCESS_KEY')
+    s3_secret_key = os.getenv('S3_SECRET_KEY')
 
-    print(f"Используем AWS_ACCESS_KEY_ID: {aws_access_key_id}")
+    print(f"Используем AWS_ACCESS_KEY_ID: {s3_access_key}")
     
     # Настройки для Yandex Cloud S3
     session = boto3.session.Session()
     s3 = session.client(
         service_name='s3',
         endpoint_url='https://storage.yandexcloud.net',
-        aws_access_key_id=aws_access_key_id,
-        aws_secret_access_key=aws_secret_access_key
+        aws_access_key_id=s3_access_key,
+        aws_secret_access_key=s3_secret_key
     )
     
     bucket_name = os.getenv('S3_BUCKET_NAME', 'ml-model-storage')
@@ -53,6 +53,16 @@ def load_model_from_s3():
     except Exception as e:
         print(f"Ошибка при загрузке модели из S3: {e}")
         raise e
+
+def predict(model, features):
+    """
+    Функция для предсказания класса и вероятностей
+    Возвращает кортеж (predicted_class, probabilities)
+    """
+    X = np.array([features])
+    prediction = model.predict(X)[0]
+    probability = model.predict_proba(X)[0]
+    return prediction, probability
 
 def handler(event, context):
     """
@@ -97,8 +107,7 @@ def handler(event, context):
         
         # Делаем предсказание
         print("Делаем предсказание...")
-        prediction = model.predict(X)[0]
-        probability = model.predict_proba(X)[0]
+        prediction, probability = predict(model, features)
         
         # Мапинг классов на названия видов
         species_names = ['setosa', 'versicolor', 'virginica']

@@ -82,3 +82,4 @@ coverage.xml
 *.cover
 .hypothesis/
 buf
+key.json

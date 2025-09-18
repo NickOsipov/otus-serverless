@@ -1,4 +1,4 @@
-# Otus Serverless ML Project
+# OTUS. Serverless ML Project
 
 Проект по развертыванию модели машинного обучения в виде serverless-функции в Yandex Cloud.
 
@@ -15,13 +15,13 @@
 ```
 otus-serverless/
 ├── src/
-│   ├── main.py         # Serverless функция для предсказаний
-│   └── train.py        # Скрипт обучения модели
+│   └── train.py            # Скрипт обучения модели
 ├── .github/
 │   └── workflows/
-│       └── ml-pipeline.yml  # CI/CD пайплайн
-├── requirements.txt    # Зависимости Python
-└── README.md          # Документация
+│       └── ьфшт.yml # CI/CD пайплайн
+├── main.py                 # Serverless функция для предсказаний
+├── requirements.txt        # Зависимости Python
+└── README.md               # Документация
 ```
 
 ## Компоненты
@@ -31,7 +31,7 @@ otus-serverless/
 - Обучает модель Random Forest
 - Сохраняет модель в S3 bucket `ml-model-storage`
 
-### 2. Serverless функция (`src/main.py`)
+### 2. Serverless функция (`main.py`)
 - Загружает модель из S3
 - Принимает данные о цветке ириса
 - Возвращает предсказание вида
@@ -45,26 +45,24 @@ otus-serverless/
 
 ### 1. Переменные окружения
 Добавьте в GitHub Secrets следующие переменные:
-- `AWS_ACCESS_KEY_ID` - ID ключа доступа для Yandex Cloud
-- `AWS_SECRET_ACCESS_KEY` - Секретный ключ доступа для Yandex Cloud
+- `S3_ACCESS_KEY` - ID ключа доступа для Yandex Cloud
+- `S3_SECRET_KEY` - Секретный ключ доступа для Yandex Cloud
 
 ### 2. S3 buckets в Yandex Cloud
-Создайте два bucket'а:
+Создайте bucket:
 - `ml-model-storage` - для хранения обученных моделей
-- `ml-serverless-source-code` - для хранения исходного кода
 
 ### 3. Локальная разработка
 ```bash
 # Установка зависимостей
-pip install -r requirements.txt
+uv sync
 
 # Создание .env файла
-echo "AWS_ACCESS_KEY_ID=your_key_id" > .env
-echo "AWS_SECRET_ACCESS_KEY=your_secret_key" >> .env
+echo "S3_ACCESS_KEY=your_key_id" > .env
+echo "S3_SECRET_KEY=your_secret_key" >> .env
 
 # Обучение модели
-cd src
-python train.py
+python3 src/train.py
 ```
 
 ## API функции
@@ -93,19 +91,14 @@ python train.py
 }
 ```
 
-## Развертывание в Yandex Cloud
+## Развертывание Yandex Cloud Functions
 
 1. Создайте Cloud Function в Yandex Cloud
 2. Настройте переменные окружения в функции
-3. Загрузите код из bucket `ml-serverless-source-code`
+3. Загрузите код в редактор
 4. Настройте API Gateway для HTTP доступа
 
-## Мониторинг
-
-Пайплайн включает:
-- Проверку загрузки модели
-- Тестирование предсказаний
-- Верификацию загрузки файлов в S3
+Либо используйте GitHub Actions для автоматического деплоя.
 
 ## Структура данных Iris
 
