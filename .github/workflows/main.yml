@@ -86,16 +86,15 @@ jobs:
           function-name: 'iris-ml-predictor'
           runtime: 'python312'
           memory: '512Mb'
-          entrypoint: 'src/main.handler'
+          entrypoint: 'main.handler'
           environment: |
             S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}
             S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
             S3_BUCKET_NAME=ml-model-storage
           include: |
-            ./src/main.py
+            ./main.py
             ./requirements.txt
           exclude: |
-            ./src/train.py
             ./**/*.md
             ./**/.git*
 
